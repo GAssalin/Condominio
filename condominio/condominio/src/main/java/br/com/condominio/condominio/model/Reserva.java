@@ -34,4 +34,6 @@ public class Reserva {
     @JoinColumn(name = "morador_id")
     private Morador morador;
     
+    private String motivo;
+    
 }
