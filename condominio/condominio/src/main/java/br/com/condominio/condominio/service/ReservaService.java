@@ -1,9 +1,14 @@
 package br.com.condominio.condominio.service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.condominio.condominio.model.Reserva;
@@ -51,6 +56,38 @@ public class ReservaService {
     	//Regra para informar o morador e a administracao
     	reserva.setStatus(StatusReserva.CANCELADA);
     	return save(reserva);
+    }
+    
+    public Page<Reserva> findReservasPendentes(Pageable pageable) {
+    	return reservaRepository.findByStatus(StatusReserva.PENDENTE, pageable);
+    }
+    
+    public Page<Reserva> findReservasHoje(Pageable pageable) {
+    	return reservaRepository.findByDataReserva(LocalDate.now(), pageable);
+    }
+    
+    public Page<Reserva> findReservasMes(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    	return reservaRepository.findByDataReservaBetween(startDate, endDate, pageable);
+    }
+    
+    public Page<Reserva> findReservasDoMorador(Long idMorador, Pageable pageable) {
+    	return reservaRepository.findByMoradorId(idMorador, pageable);
+    }
+    
+    public Page<Reserva> findReservasDoMoradorHoje(Long idMorador, Date dataReserva, Pageable pageable) {
+    	return reservaRepository.findByMoradorIdAndDataReserva(idMorador, LocalDate.now(), pageable);
+    }
+    
+    public Page<Reserva> findReservasOrdenadas() {
+    	return reservaRepository.findByOrderByDataReservaAsc();
+    }
+    
+    public Page<Reserva> findReservasRecentesDoMorador(Long idMorador) {
+    	return reservaRepository.findByMoradorIdOrderByDataReservaDesc(idMorador, PageRequest.of(0, 10));
+    }
+    
+    public Page<Reserva> findByStatus(StatusReserva status, Pageable pageable) {
+    	return reservaRepository.findByStatus(status, pageable);
     }
 
 }
